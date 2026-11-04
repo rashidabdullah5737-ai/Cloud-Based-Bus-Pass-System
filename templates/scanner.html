@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CloudBus | QR Ticket Scanner</title>
+
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #172033;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 35px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #123b70;
+        }
+
+        .description {
+            text-align: center;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        #reader {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        #status {
+            margin-top: 22px;
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            background: #eff6ff;
+            color: #1d4ed8;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            display: block;
+            width: fit-content;
+            margin: 25px auto 0;
+            padding: 12px 22px;
+            background: #123b70;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+        }
+
+        .back-btn:hover {
+            background: #0b2850;
+        }
+
+        .note {
+            text-align: center;
+            margin-top: 18px;
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>CloudBus QR Scanner</h1>
+
+        <p class="description">
+            Scan a CloudBus digital ticket QR code using your device camera.
+            The system will open the ticket verification page automatically.
+        </p>
+
+        <div id="reader"></div>
+
+        <div id="status">
+            Initialising QR scanner...
+        </div>
+
+        <a href="{{ url_for('my_bookings') }}" class="back-btn">
+            Back to My Tickets
+        </a>
+
+        <p class="note">
+            Camera permission is required to scan QR codes.
+        </p>
+
+    </div>
+
+    <script>
+        const statusBox = document.getElementById("status");
+
+        function showStatus(message) {
+            statusBox.textContent = message;
+        }
+
+        function extractTicketId(decodedText) {
+
+            const text = decodedText.trim();
+
+            // Accept a direct UUID
+            const uuidPattern =
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+            if (uuidPattern.test(text)) {
+                return text;
+            }
+
+            // Accept a CloudBus verification URL
+            try {
+                const parsedUrl = new URL(text, window.location.origin);
+
+                const match = parsedUrl.pathname.match(
+                    /\/verify\/([0-9a-f-]{36})\/?$/i
+                );
+
+                if (match && uuidPattern.test(match[1])) {
+                    return match[1];
+                }
+
+            } catch (error) {
+                return null;
+            }
+
+            return null;
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+
+            const ticketId = extractTicketId(decodedText);
+
+            if (!ticketId) {
+                showStatus("Invalid QR code. Please scan a valid CloudBus ticket.");
+                return;
+            }
+
+            showStatus("QR code detected! Opening ticket verification...");
+
+            html5QrcodeScanner.clear().then(() => {
+
+                const verificationUrl =
+                    {{ url_for('verify_ticket', ticket_id='TICKET_ID_PLACEHOLDER') | tojson }};
+
+                window.location.href = verificationUrl.replace(
+                    "TICKET_ID_PLACEHOLDER",
+                    encodeURIComponent(ticketId)
+                );
+
+            }).catch(() => {
+
+                showStatus("Ticket detected, but the scanner could not stop.");
+
+            });
+        }
+
+        function onScanFailure(error) {
+            // Normal while the camera is searching for a QR code.
+        }
+
+        if (typeof Html5QrcodeScanner === "undefined") {
+
+            showStatus(
+                "Scanner library could not load. Check your internet connection and reload this page."
+            );
+
+        } else {
+
+            const html5QrcodeScanner = new Html5QrcodeScanner(
+                "reader",
+                {
+                    fps: 10,
+                    qrbox: {
+                        width: 250,
+                        height: 250
+                    },
+                    rememberLastUsedCamera: true
+                },
+                false
+            );
+
+            html5QrcodeScanner.render(
+                onScanSuccess,
+                onScanFailure
+            );
+
+            showStatus(
+                "Scanner ready. Allow camera access and point it at a CloudBus QR code."
+            );
+        }
+    </script>
+
+</body>
+</html>

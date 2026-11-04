@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>My Tickets | CloudBus</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f9;
+            color: #172033;
+            padding: 30px 15px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: #102343;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #1765a8;
+            color: white;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .ticket {
+            background: white;
+            padding: 25px;
+            margin: 22px 0;
+            border-radius: 14px;
+            border-left: 6px solid #19b99a;
+            box-shadow: 0 4px 15px #0000000d;
+        }
+
+        .ticket h2 {
+            color: #1765a8;
+            margin-top: 0;
+        }
+
+        .ticket-info p {
+            margin: 12px 0;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-top: 25px;
+            padding: 20px;
+            background: #f5f8fc;
+            border-radius: 10px;
+        }
+
+        .qr-section img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            background: white;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .verify-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: #19b99a;
+            color: #102343;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+        .empty {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 35px;
+            color: #667085;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ticket {
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🎫 My CloudBus Tickets</h1>
+        <a href="/routes" class="btn">+ Book Another Ticket</a>
+    </div>
+
+    <div id="qr-codes">
+
+        {% for booking in bookings %}
+
+        <div class="ticket">
+
+            <h2>
+                {{ booking.route.source }}
+                →
+                {{ booking.route.destination }}
+            </h2>
+
+            <div class="ticket-info">
+
+                <p>
+                    <strong>Passenger:</strong>
+                    {{ booking.user.username }}
+                </p>
+
+                <p>
+                    <strong>Seat Number:</strong>
+                    {{ booking.seat_number }}
+                </p>
+
+                <p>
+                    <strong>Departure:</strong>
+                    {{ booking.route.departure_time }}
+                </p>
+
+                <p>
+                    <strong>Ticket Price:</strong>
+                    PKR {{ "%.2f"|format(booking.route.price) }}
+                </p>
+
+                <p>
+                    <strong>Ticket ID:</strong>
+                    {{ booking.ticket_id }}
+                </p>
+
+                <p>
+                    <strong>Booking Date:</strong>
+                    {{ booking.booking_date.strftime("%d %B %Y, %I:%M %p") }}
+                </p>
+
+            </div>
+
+            <div class="qr-section">
+
+                <h3>📱 Digital QR Ticket</h3>
+
+                <p>Present this QR code for ticket verification.</p>
+
+                <img
+                    src="{{ url_for('static', filename='qrcodes/' + booking.ticket_id + '.png') }}"
+                    alt="QR Code for Ticket {{ booking.ticket_id }}"
+                >
+
+                <br>
+
+                <a
+                    href="{{ url_for('verify_ticket', ticket_id=booking.ticket_id) }}"
+                    class="verify-btn"
+                >
+                    Verify This Ticket →
+                </a>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <div class="empty">
+            <h2>No Tickets Found</h2>
+            <p>You haven't booked any bus tickets yet.</p>
+            <a href="/routes" class="btn">Explore Bus Routes</a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<footer>
+    <p>CloudBus | Smart Cloud-Based Bus Pass System</p>
+</footer>
+
+</body>
+</html>

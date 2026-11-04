@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBus | Smart Transportation</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #172033;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #101d36;
+            color: white;
+            padding: 22px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h2 {
+            font-size: 26px;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            color: #19c6a0;
+        }
+
+        .hero {
+            padding: 110px 8%;
+            background: linear-gradient(120deg, #102343, #1765a8);
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 45px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            max-width: 650px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 25px;
+            background: #19c6a0;
+            color: #102343;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin: 5px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: white;
+            transform: translateY(-3px);
+        }
+
+        .section-heading {
+            text-align: center;
+            padding: 55px 20px 10px;
+        }
+
+        .section-heading h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .section-heading p {
+            color: #667085;
+        }
+
+        .features {
+            padding: 45px 8% 75px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 22px;
+        }
+
+        .card {
+            display: block;
+            padding: 30px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 3px 15px #00000010;
+            text-decoration: none;
+            color: #172033;
+            border: 1px solid #e7ecf3;
+            transition: 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 28px #00000018;
+            border-color: #19c6a0;
+        }
+
+        .card h2 {
+            font-size: 21px;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: #667085;
+            margin-bottom: 20px;
+        }
+
+        .card span {
+            color: #1765a8;
+            font-weight: bold;
+        }
+
+        footer {
+            background: #101d36;
+            color: white;
+            padding: 28px;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        @media (max-width: 650px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav {
+                justify-content: center;
+            }
+
+            .hero {
+                padding: 75px 8%;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 32px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section-heading h2 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>☁ CloudBus</h2>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="#features">Features</a>
+
+        {% if current_user.is_authenticated %}
+            <a href="/routes">Book Tickets</a>
+            <a href="/my-bookings">My Tickets</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        {% endif %}
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Your Journey, Made Smarter.</h1>
+
+    <p>
+        Welcome to CloudBus — a smart cloud-based bus pass
+        platform. Explore routes, book seats, manage digital
+        tickets and access QR-based ticket verification.
+    </p>
+
+    {% if current_user.is_authenticated %}
+        <a href="/routes" class="btn">Explore Bus Routes</a>
+        <a href="/my-bookings" class="btn">My Tickets</a>
+    {% else %}
+        <a href="/register" class="btn">Get Started</a>
+        <a href="/login" class="btn">Login</a>
+    {% endif %}
+</section>
+
+<section class="section-heading">
+    <h2>Explore CloudBus Features</h2>
+    <p>Everything you need for a smarter bus booking experience.</p>
+</section>
+
+<section class="features" id="features">
+
+    <a href="/routes" class="card">
+        <h2>🚌 Bus Routes</h2>
+        <p>Explore available bus routes, destinations, departure times and ticket prices.</p>
+        <span>Explore Routes →</span>
+    </a>
+
+    <a href="/my-bookings" class="card">
+        <h2>🎫 Digital Tickets</h2>
+        <p>Access your bookings and manage your digital bus tickets in one place.</p>
+        <span>View My Tickets →</span>
+    </a>
+
+    <a href="/my-bookings" class="card">
+        <h2>📱 QR Verification</h2>
+        <p>Access the QR codes generated for your booked tickets.</p>
+        <span>View QR Tickets →</span>
+    </a>
+
+    <a href="/login" class="card">
+        <h2>🔐 Secure Access</h2>
+        <p>Access your account through the platform's login and registration system.</p>
+        <span>Access Account →</span>
+    </a>
+
+</section>
+
+<footer>
+    <p><strong>☁ CloudBus</strong> | Smart Cloud-Based Bus Pass System</p>
+    <p>Developed as a Cloud Computing Internship Project.</p>
+    <p>© 2026 CloudBus. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

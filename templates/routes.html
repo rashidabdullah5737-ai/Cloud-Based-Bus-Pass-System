@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bus Routes | CloudBus</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef3f9;
+            margin: 0;
+            color: #172033;
+        }
+        header {
+            background: #101d36;
+            color: white;
+            padding: 22px 7%;
+        }
+        .container {
+            max-width: 1050px;
+            margin: 35px auto;
+            padding: 15px;
+        }
+        .route {
+            background: white;
+            padding: 24px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #00000010;
+        }
+        .route h3 { color: #1765a8; }
+        input, button {
+            padding: 12px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background: #1765a8;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        a { color: white; margin-right: 15px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>CloudBus – Available Routes</h2>
+    <a href="/">Home</a>
+    <a href="/my-bookings">My Bookings</a>
+    <a href="/logout">Logout</a>
+</header>
+
+<div class="container">
+    <h1>Explore Bus Routes</h1>
+    <p>Welcome, {{ current_user.username }}!</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <p class="{{ category }}">{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    {% for route in routes %}
+    <div class="route">
+        <h3>{{ route.source }} → {{ route.destination }}</h3>
+        <p>Departure: {{ route.departure_time }}</p>
+        <p>Ticket Price: PKR {{ "%.2f"|format(route.price) }}</p>
+        <p>Total Seats: {{ route.total_seats }}</p>
+
+        <form method="POST" action="{{ url_for('book', route_id=route.id) }}">
+            <label>Select Seat:</label>
+            <input
+                type="number"
+                name="seat_number"
+                min="1"
+                max="{{ route.total_seats }}"
+                required
+            >
+            <button type="submit">Book Ticket</button>
+        </form>
+    </div>
+    {% else %}
+        <p>No bus routes are currently available.</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database files
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated QR codes
+static/qrcodes/*
+
+# Keep directory structure
+!static/qrcodes/.gitkeep
+
+# IDE and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
